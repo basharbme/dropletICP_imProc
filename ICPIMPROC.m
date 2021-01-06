@@ -4,11 +4,6 @@ classdef ICPIMPROC < handle
     properties %(SetAccess = 'public', GetAccess = 'public')
         dataInfo_ = {};
         caseList_ = {};
-%         texRed_init_ = struct([])
-%         texRed_final_ = struct([])
-%         GFP_init_ = struct([])
-%         GFP_final_ICP_ = struct([])
-%         GFP_final_ = struct([])
     end
     
     methods
@@ -16,12 +11,7 @@ classdef ICPIMPROC < handle
         function obj=ICPIMPROC() 
             % load file info
             imFileInfo; 
-            obj.dataInfo_ = dataInfo;
-%             obj.texRed_init_=texRed_init;
-%             obj.texRed_final_=texRed_final;
-%             obj.GFP_init_=GFP_init;
-%             obj.GFP_final_=GFP_final;
-%            obj.GFP_final_ICP_=GFP_final_ICP; 
+            obj.dataInfo_ = dataInfo; 
             disp('Data info loaded!')
             
             % initialize images
@@ -32,17 +22,6 @@ classdef ICPIMPROC < handle
                 obj.initIm(obj.caseList_{i});
             end
             disp('Images are initialized!')
-        end
-        
-        function exist = ifProp(obj,str)
-            checkProp = strcmp(obj.caseList_,str);
-            numProp = sum(checkProp);
-            if (numProp == 1)
-                exist = true;
-            else
-                exist = false;
-                error('Check experiment case name')
-            end
         end
            
         function obj = initIm(obj,exp_case)
@@ -75,16 +54,26 @@ classdef ICPIMPROC < handle
         end
         
         function imSub = imSubtract(obj,exp_case_1,exp_case_2)
-            if(obj.ifProp(exp_case_1) && obj.ifProp(exp_case_2))
-                % overlap image by cross-correlation 
-                im1 = obj.(exp_case_1).IM.bgOut;
-                im2 = obj.(exp_case_2).IM.bgOut;
-                c = normxcorr2(im2,im1);
-                [ypeak,xpeak] = find(c==max(c(:)));
-                imSize = size(im2);
-                im2shift = imtranslate(im2,[xpeak(1)-imSize(1), ypeak(1)-imSize(2)]);
-                imSub = im1-im2shift;
-            end
+            idx_1 = find(ismember(obj.caseList_, exp_case_1));
+            assert(~isempty(idx_1),'Check case name for 1')
+            idx_2 = find(ismember(obj.caseList_, exp_case_2));
+            assert(~isempty(idx_2),'Check case name for 2')
+            
+            % overlap image by cross-correlation
+            im1 = obj.dataInfo_{idx_1}.IM.bgOut;
+            im2 = obj.dataInfo_{idx_2}.IM.bgOut;
+            c = normxcorr2(im2,im1);
+            [ypeak,xpeak] = find(c==max(c(:)));
+            imSize = size(im2);
+            im2shift = imtranslate(im2,[xpeak(1)-imSize(1), ypeak(1)-imSize(2)]);
+            imSub = im1-im2shift;
+        end
+        
+        function intSum = imIntSum(obj,caseName,imType)
+            idx = find(ismember(obj.caseList_, caseName));
+            assert(~isempty(idx),'Check case name')
+            
+            intSum = sum(sum(obj.dataInfo_{idx}.IM.(imType)));
         end
     end  
 end

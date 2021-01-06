@@ -11,8 +11,9 @@ icpImProc = ICPIMPROC;
 icpImProc.masking('GFP_init','texRed_init');
 icpImProc.masking('GFP_final','texRed_final');
 
+intSum_GFP_init = icpImProc.imIntSum('GFP_init','bgOut');
 GFP_init_avg = sum(icpImProc.GFP_init_.IM.gr(:))/sum(icpImProc.GFP_init_.IM.bw(:));
-GFP_diff = icpImProc.imSubtract('GFP_final_','GFP_init_');
+GFP_diff = icpImProc.imSubtract('GFP_final','GFP_init');
 GFP_diff_avg = sum(GFP_diff(:))/sum(icpImProc.texRed_final_.IM.bw(:));
 GFP_EF_mean = 1+GFP_diff_avg/GFP_init_avg; 
 
