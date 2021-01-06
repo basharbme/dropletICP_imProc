@@ -53,15 +53,15 @@ classdef ICPIMPROC < handle
             obj.dataInfo_{idx_src}.IM.bgOut = bgOut;
         end
         
-        function imSub = imSubtract(obj,exp_case_1,exp_case_2)
+        function imSub = imSubtract(obj,exp_case_1,imType_1,exp_case_2,imType_2)
             idx_1 = find(ismember(obj.caseList_, exp_case_1));
             assert(~isempty(idx_1),'Check case name for 1')
             idx_2 = find(ismember(obj.caseList_, exp_case_2));
             assert(~isempty(idx_2),'Check case name for 2')
             
             % overlap image by cross-correlation
-            im1 = obj.dataInfo_{idx_1}.IM.bgOut;
-            im2 = obj.dataInfo_{idx_2}.IM.bgOut;
+            im1 = obj.dataInfo_{idx_1}.IM.(imType_1);
+            im2 = obj.dataInfo_{idx_2}.IM.(imType_2);
             c = normxcorr2(im2,im1);
             [ypeak,xpeak] = find(c==max(c(:)));
             imSize = size(im2);
@@ -70,10 +70,15 @@ classdef ICPIMPROC < handle
         end
         
         function intSum = imIntSum(obj,caseName,imType)
+            I = obj.getIm(caseName,imType);
+            intSum = sum(sum(I));
+        end
+        
+        function I = getIm(obj,caseName,imType) 
             idx = find(ismember(obj.caseList_, caseName));
             assert(~isempty(idx),'Check case name')
             
-            intSum = sum(sum(obj.dataInfo_{idx}.IM.(imType)));
+            I = obj.dataInfo_{idx}.IM.(imType);
         end
     end  
 end
