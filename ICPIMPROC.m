@@ -2,11 +2,13 @@
 classdef ICPIMPROC < handle
        
     properties %(SetAccess = 'public', GetAccess = 'public')
-        texRed_init_ = struct([])
-        texRed_final_ = struct([])
-        GFP_init_ = struct([])
-        GFP_final_ICP_ = struct([])
-        GFP_final_ = struct([])
+        dataInfo_ = {};
+        caseList_ = {};
+%         texRed_init_ = struct([])
+%         texRed_final_ = struct([])
+%         GFP_init_ = struct([])
+%         GFP_final_ICP_ = struct([])
+%         GFP_final_ = struct([])
     end
     
     methods
@@ -14,22 +16,26 @@ classdef ICPIMPROC < handle
         function obj=ICPIMPROC() 
             % load file info
             imFileInfo; 
-            obj.texRed_init_=texRed_init;
-            obj.texRed_final_=texRed_final;
-            obj.GFP_init_=GFP_init;
-            obj.GFP_final_=GFP_final;
-            obj.GFP_final_ICP_=GFP_final_ICP; disp('ICPIMPROC properties set!')
+            obj.dataInfo_ = dataInfo;
+%             obj.texRed_init_=texRed_init;
+%             obj.texRed_final_=texRed_final;
+%             obj.GFP_init_=GFP_init;
+%             obj.GFP_final_=GFP_final;
+%            obj.GFP_final_ICP_=GFP_final_ICP; 
+            disp('Data info loaded!')
             
             % initialize images
-            props = properties(obj);
-            for i = 1:length(props)
-                obj.initIm(props{i});
+            for i = 1:length(obj.dataInfo_)
+                obj.caseList_{i} = obj.dataInfo_{i}.name;
+            end
+            for i = 1:length(obj.caseList_)
+                obj.initIm(obj.caseList_{i});
             end
             disp('Images are initialized!')
         end
         
         function exist = ifProp(obj,str)
-            checkProp = strcmp(properties(obj),str);
+            checkProp = strcmp(obj.caseList_,str);
             numProp = sum(checkProp);
             if (numProp == 1)
                 exist = true;
@@ -40,40 +46,32 @@ classdef ICPIMPROC < handle
         end
            
         function obj = initIm(obj,exp_case)
-             if (obj.ifProp(exp_case))
-                filename = obj.(exp_case).path_n_filename;
-                I = imread(filename);
-                Igr = medfilt2(I);
-                Ibw = imbinarize(Igr);
-                
-                obj.(exp_case).IM.im = I;
-                obj.(exp_case).IM.gr = Igr;
-                obj.(exp_case).IM.bw = Ibw;
-             end
+            %find case from property
+            idx = find(ismember(obj.caseList_, exp_case));
+            assert(~isempty(idx),'Check case name')
+            
+            filename = obj.dataInfo_{idx}.path_n_filename;
+            I = imread(filename);
+            Igr = medfilt2(I); % median filter
+            Ibw = imbinarize(Igr);
+            
+            % udpate image data
+            obj.dataInfo_{idx}.IM.im = I;
+            obj.dataInfo_{idx}.IM.gr = Igr;
+            obj.dataInfo_{idx}.IM.bw = Ibw;
         end
         
         function [bgOut] = masking(obj,exp_case_source,exp_case_mask)
-            if(obj.ifProp(exp_case_source) && obj.ifProp(exp_case_mask))
-                source = obj.(exp_case_source).IM.gr;
-                mask = obj.(exp_case_mask).IM.bw;
-                bgOut = source .* uint16(mask);
-                obj.(exp_case_source).IM.bgOut = bgOut;
-            end 
-        end
-        
-        function testXCorel(obj)
-            im1 = obj.GFP_init_.IM.bgOut;
-            im2 = obj.GFP_final_.IM.bgOut;
-            montage({im1*10,im2*10})
+            %find case from property
+            idx_src = find(ismember(obj.caseList_, exp_case_source));
+            assert(~isempty(idx_src),'Check case name for source')
+            idx_mask = find(ismember(obj.caseList_, exp_case_mask));
+            assert(~isempty(idx_mask),'Check case name for mask')
             
-            c = normxcorr2(im2,im1);
-            [ypeak,xpeak] = find(c==max(c(:)));
-            
-            imSize = size(im2);
-            im2shift = imtranslate(im2,[xpeak(1)-imSize(1), ypeak(1)-imSize(2)]);
-            figure()
-            montage({im1*10,im2shift*10})
-            
+            source = obj.dataInfo_{idx_src}.IM.gr;
+            mask = obj.dataInfo_{idx_mask}.IM.bw;
+            bgOut = source .* uint16(mask);
+            obj.dataInfo_{idx_src}.IM.bgOut = bgOut;
         end
         
         function imSub = imSubtract(obj,exp_case_1,exp_case_2)

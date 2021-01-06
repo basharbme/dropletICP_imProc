@@ -8,8 +8,8 @@ tic
 icpImProc = ICPIMPROC;
 
 %% get average GFP increased
-icpImProc.masking('GFP_init_','texRed_init_');
-icpImProc.masking('GFP_final_','texRed_final_');
+icpImProc.masking('GFP_init','texRed_init');
+icpImProc.masking('GFP_final','texRed_final');
 
 GFP_init_avg = sum(icpImProc.GFP_init_.IM.gr(:))/sum(icpImProc.GFP_init_.IM.bw(:));
 GFP_diff = icpImProc.imSubtract('GFP_final_','GFP_init_');
