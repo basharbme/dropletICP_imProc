@@ -14,7 +14,7 @@ classdef ICPIMPROC < handle
             obj.dataInfo_ = dataInfo; 
             disp('Data info loaded!')
             
-            % initialize images
+            % 0minialize images
             for i = 1:length(obj.dataInfo_)
                 obj.caseList_{i} = obj.dataInfo_{i}.name;
             end
