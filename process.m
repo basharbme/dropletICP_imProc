@@ -6,7 +6,7 @@ close all
 lineWidth = 2;
 markerSize = 12;
 
-tic
+
 %% class initializing  
 icpImProc = ICPIMPROC;
 
@@ -18,12 +18,23 @@ dropSize_0min = icpImProc.imIntSum('texRed_0min','bw');
 % out of ICP zone
 icpImProc.masking('GFP_noICP_0min','texRed_noICP_0min');
 dropSize_noICP_0min = icpImProc.imIntSum('texRed_noICP_0min','bw');
+GFP_noICP_avgInt_0min = icpImProc.getIm('GFP_noICP_0min','bgOut');
+icpImProc.imshow('texRed_noICP_0min','gr')
+a = 1;
+
 
 %% 5 min 
 % in ICP zone
 icpImProc.masking('GFP_ICP_5min','texRed_ICP_5min');
-dropSize_0min = icpImProc.imIntSum('texRed_ICP_5min','bw');
-montage({icpImProc.getIm('GFP_ICP_5min','gr')*50,icpImProc.getIm('texRed_ICP_5min','bw')});
+dropSize_ICP_5min = icpImProc.imIntSum('texRed_ICP_5min','bw');
+GFP_ICP_diff_5min = icpImProc.imSubtract('GFP_ICP_5min','bgOut','GFP_0min','bgOut');
+GFP_ICP_EF_5min_max = 1+double(max(max(GFP_ICP_diff_5min)))/avgInt_GFP_0min;
+
+
+% icpImProc.masking('GFP_ICP_5min','texRed_5min');
+% GFP_ICP_diff_5min = icpImProc.imSubtract('GFP_ICP_5min','bgOut','GFP_0min','bgOut');
+% GFP_ICP_EF_5min_max = 1+double(max(max(GFP_ICP_diff_5min)))/avgInt_GFP_0min;
+
 
 a = 1
 % icpImProc.masking('GFP_final','texRed_final');

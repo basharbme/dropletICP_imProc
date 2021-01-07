@@ -37,11 +37,9 @@ classdef ICPIMPROC < handle
             Igr = imclose(Igr,se); % for image opening and closing
             Ibw = imbinarize(Igr);
             Ibw = bwareaopen(Ibw, 1000); % remove small objects
+            Ibw = bwareafilt(Ibw,1); % remove all drops except the largest
             
-            % image opening and closing for drop boundary construction
-            
-            
-            
+           
             % udpate image data
             obj.dataInfo_{idx}.IM.im = I;
             obj.dataInfo_{idx}.IM.gr = Igr;
@@ -87,6 +85,14 @@ classdef ICPIMPROC < handle
             assert(~isempty(idx),'Check case name')
             
             I = obj.dataInfo_{idx}.IM.(imType);
+        end
+        
+        function imshow(obj,caseName,imType)
+            idx = find(ismember(obj.caseList_, caseName));
+            assert(~isempty(idx),'Check case name')
+            
+            I = obj.getIm(caseName,imType);
+            imshow(I)
         end
     end  
 end

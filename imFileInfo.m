@@ -15,13 +15,13 @@ GFP_0min.IM = [];
 texRed_noICP_0min.name = 'texRed_noICP_0min';
 texRed_noICP_0min.path = [pwd '\' '0min' '\' 'ICPOff'];
 texRed_noICP_0min.fileName = 'upstream_initial_non_icp_zonec3.tif';
-texRed_noICP_0min.path_n_filename = [texRed_0min.path '\' texRed_0min.fileName];
+texRed_noICP_0min.path_n_filename = [texRed_noICP_0min.path '\' texRed_noICP_0min.fileName];
 texRed_noICP_0min.IM = [];
 
 GFP_noICP_0min.name = 'GFP_noICP_0min';
 GFP_noICP_0min.path = [pwd '\' '0min' '\' 'ICPOff'];
 GFP_noICP_0min.fileName = 'upstream_initial_non_icp_zonec2.tif';
-GFP_noICP_0min.path_n_filename = [GFP_0min.path '\' GFP_0min.fileName];
+GFP_noICP_0min.path_n_filename = [GFP_noICP_0min.path '\' GFP_noICP_0min.fileName];
 GFP_noICP_0min.IM = [];
 
 %% 5 min, ICP zone 
