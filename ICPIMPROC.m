@@ -32,7 +32,15 @@ classdef ICPIMPROC < handle
             filename = obj.dataInfo_{idx}.path_n_filename;
             I = imread(filename);
             Igr = medfilt2(I); % median filter
+            se = strel('disk',5);
+            Igr = imopen(Igr,se); % for image opening and closing
+            Igr = imclose(Igr,se); % for image opening and closing
             Ibw = imbinarize(Igr);
+            Ibw = bwareaopen(Ibw, 1000); % remove small objects
+            
+            % image opening and closing for drop boundary construction
+            
+            
             
             % udpate image data
             obj.dataInfo_{idx}.IM.im = I;
