@@ -85,12 +85,20 @@ GFP_ICPOff_diff_20min = GFP_ICPOff_diff_20min.*uint16(bwareaopen(GFP_ICPOff_diff
 GFP_ICPOff_meanDiff_20min = sum(GFP_ICPOff_diff_20min(:))/dropSize_ICPOff_20min;
 meanEF_GFP_ICPOff_20min = 1+GFP_ICPOff_meanDiff_20min/avgInt_GFP_noICP_0min;
 
-% out of ICP zone
-icpImProc.masking('GFP_noICP_20min','texRed_noICP_20min');
-dropSize_noICP_20min = icpImProc.imIntSum('texRed_noICP_20min','bw');
-intSum_GFP_noICP_20min = icpImProc.imIntSum('GFP_noICP_20min','bgOut');
-avgInt_GFP_noICP_20min = intSum_GFP_noICP_20min/dropSize_noICP_20min;
-EF_GFP_noICP_20min = avgInt_GFP_noICP_20min/avgInt_GFP_noICP_0min;
+% %% 25 min 
+% % ICPOn 
+% icpImProc.masking('GFP_ICP_25min','texRed_ICP_25min');
+% GFP_ICP_diff_25min = icpImProc.imSubtract('GFP_ICP_25min','bgOut','GFP_0min','bgOut');
+% GFP_ICP_diff_25min = GFP_ICP_diff_25min.*uint16(bwareaopen(GFP_ICP_diff_25min, 1000)); % remove artificial peaks 
+% maxEF_GFP_ICP_25min = 1+double(max(max(GFP_ICP_diff_25min)))/avgInt_GFP_noICP_0min;
+% 
+% % ICPOff
+% icpImProc.masking('GFP_ICPOff_25min','texRed_ICPOff_25min');
+% dropSize_ICPOff_25min = icpImProc.imIntSum('texRed_ICPOff_25min','bw');
+% GFP_ICPOff_diff_25min = icpImProc.imSubtract('GFP_ICPOff_25min','bgOut','GFP_0min','bgOut');
+% GFP_ICPOff_diff_25min = GFP_ICPOff_diff_25min.*uint16(bwareaopen(GFP_ICPOff_diff_25min, 1000)); % remove artificial peaks 
+% GFP_ICPOff_meanDiff_25min = sum(GFP_ICPOff_diff_25min(:))/dropSize_ICPOff_25min;
+% meanEF_GFP_ICPOff_25min = 1+GFP_ICPOff_meanDiff_25min/avgInt_GFP_noICP_0min;
 
 %% plots
 %EF
@@ -103,14 +111,15 @@ EF_ICPOff = [1 meanEF_GFP_ICPOff_5min meanEF_GFP_ICPOff_10min meanEF_GFP_ICPOff_
 plot(t,EF_ICP,'-o','LineWidth',lineWidth,'MarkerSize',markerSize), hold on
 plot(t,EF_ICPOff,'-x','LineWidth',lineWidth,...
     'MarkerSize',markerSize)
-plot([0 20],[EF_GFP_noICP_20min EF_GFP_noICP_20min],'-*',...
-    'LineWidth',lineWidth,'MarkerSize',markerSize)
+% plot([0 20],[EF_GFP_noICP_20min EF_GFP_noICP_20min],'-*',...
+%     'LineWidth',lineWidth,'MarkerSize',markerSize)
 
 %accessaries 
-axis([-1 21 -inf inf])
+%axis([-1 21 -inf inf])
 xlabel('Time (min)','Interpreter','latex')
 ylabel('Enrichment Factor','Interpreter','latex')
-legend('Max EF w/ ICP', 'Droplet EF w/o ICP', 'EF ICP never experienced');
+legend('Max EF w/ ICP', 'Droplet EF w/o ICP')%, 'EF ICP never experienced');
+title('122920 10V')
 
 %save
 print('EF','-dpng')
