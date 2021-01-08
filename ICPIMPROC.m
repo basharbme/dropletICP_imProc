@@ -39,7 +39,6 @@ classdef ICPIMPROC < handle
             Ibw = bwareaopen(Ibw, 1000); % remove small objects
             Ibw = bwareafilt(Ibw,1); % remove all drops except the largest
             
-           
             % udpate image data
             obj.dataInfo_{idx}.IM.im = I;
             obj.dataInfo_{idx}.IM.gr = Igr;
@@ -88,9 +87,6 @@ classdef ICPIMPROC < handle
         end
         
         function imshow(obj,caseName,imType)
-            idx = find(ismember(obj.caseList_, caseName));
-            assert(~isempty(idx),'Check case name')
-            
             I = obj.getIm(caseName,imType);
             imshow(I)
         end
